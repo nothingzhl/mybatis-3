@@ -16,8 +16,10 @@
 package org.apache.ibatis.submitted.batch_test;
 
 import java.io.Reader;
+import java.util.Iterator;
 
 import org.apache.ibatis.BaseDataTest;
+import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -63,4 +65,17 @@ class BatchTest {
     }
   }
 
+  @Test
+  void shouldGetAUserByCursor() {
+
+    try(SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH,true)){
+      Cursor<User> userCursor = sqlSession.selectCursor("getUser",1);
+      Assertions.assertNotNull(userCursor);
+      User user = userCursor.iterator().next();
+      Assertions.assertEquals("Dept1", user.getDept().getName());
+    }catch (Exception e) {
+      Assertions.fail(e.getMessage());
+    }
+
+  }
 }
